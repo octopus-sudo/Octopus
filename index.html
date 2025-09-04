@@ -1,43 +1,36 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <title>Registro de Vendas</title>
-</head>
-<body>
-  <h2>Registrar Venda</h2>
+function registrarVenda() {
+  const texto = document.getElementById("vendaInput").value;
+  const botao = document.getElementById("botaoEnviar");
+  const mensagem = document.getElementById("mensagem");
 
-  <input type="text" id="vendaInput" placeholder="Digite a venda">
-  <button onclick="registrarVenda()">Enviar</button>
+  if (!texto.trim()) {
+    mensagem.textContent = "Por favor, digite uma venda.";
+    return;
+  }
 
-  <p id="mensagem"></p>
+  // Desativa o botão e mostra "Enviando..."
+  botao.disabled = true;
+  botao.textContent = "Enviando...";
 
-  <script>
-    function registrarVenda() {
-      const texto = document.getElementById("vendaInput").value;
-
-      if (!texto.trim()) {
-        document.getElementById("mensagem").textContent = "Por favor, digite uma venda.";
-        return;
-      }
-
-      fetch("https://script.google.com/macros/s/AKfycbyKPGc89sVFkmFqpzNl-VkfPbNTK1QjhFWnIpJu6YhandEciMX_gjiSETrT4s9DK9fqEQ/exec", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: "texto=" + encodeURIComponent(texto)
-      })
-      .then(response => response.text())
-      .then(data => {
-        document.getElementById("mensagem").textContent = "Venda registrada com sucesso!";
-        document.getElementById("vendaInput").value = ""; // limpa o campo
-      })
-      .catch(error => {
-        document.getElementById("mensagem").textContent = "Erro ao registrar venda.";
-        console.error("Erro:", error);
-      });
-    }
-  </script>
-</body>
-</html>
+  fetch("https://script.google.com/macros/s/AKfycbyKPGc89sVFkmFqpzNl-VkfPbNTK1QjhFWnIpJu6YhandEciMX_gjiSETrT4s9DK9fqEQ/exec", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: "texto=" + encodeURIComponent(texto)
+  })
+  .then(response => response.text())
+  .then(data => {
+    mensagem.textContent = "Venda registrada com sucesso!";
+    document.getElementById("vendaInput").value = "";
+  })
+  .catch(error => {
+    mensagem.textContent = "Erro ao registrar venda.";
+    console.error("Erro:", error);
+  })
+  .finally(() => {
+    // Reativa o botão e restaura o texto
+    botao.disabled = false;
+    botao.textContent = "Enviar";
+  });
+}
