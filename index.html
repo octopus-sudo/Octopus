@@ -1,15 +1,43 @@
-function doPost(e) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getSheetByName("Registros");
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Registro de Vendas</title>
+</head>
+<body>
+  <h2>Registrar Venda</h2>
 
-  // Teste: escreve "edit 01" na célula A1
-  sheet.getRange("D1").setValue("edit 01");
+  <input type="text" id="vendaInput" placeholder="Digite a venda">
+  <button onclick="registrarVenda()">Enviar</button>
 
-  // Grava os dados enviados
-  var data = Utilities.formatDate(new Date(), "GMT-3", "dd/MM/yyyy HH:mm");
-  var texto = e.parameter.texto;
+  <p id="mensagem"></p>
 
-  sheet.appendRow([data, texto]);
+  <script>
+    function registrarVenda() {
+      const texto = document.getElementById("vendaInput").value;
 
-  return ContentService.createTextOutput("OK");
-}
+      if (!texto.trim()) {
+        document.getElementById("mensagem").textContent = "Por favor, digite uma venda.";
+        return;
+      }
+
+      fetch("https://script.google.com/macros/s/AKfycbyKPGc89sVFkmFqpzNl-VkfPbNTK1QjhFWnIpJu6YhandEciMX_gjiSETrT4s9DK9fqEQ/exec", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: "texto=" + encodeURIComponent(texto)
+      })
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById("mensagem").textContent = "Venda registrada com sucesso!";
+        document.getElementById("vendaInput").value = ""; // limpa o campo
+      })
+      .catch(error => {
+        document.getElementById("mensagem").textContent = "Erro ao registrar venda.";
+        console.error("Erro:", error);
+      });
+    }
+  </script>
+</body>
+</html>
